@@ -22,6 +22,62 @@ jobs:
       - run: npm clean-install
       - run: npm run build
       - run: npm run lint
+      - run: node lib/cli.js --help
+
+  bundle-alpine:
+    name: Build bundle on Alpine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup latest Alpine Linux
+        uses: jirutka/setup-alpine@v1
+        with:
+          packages: >
+            build-base
+            giflib-dev
+            nodejs
+            npm
+            pango-dev
+            pixman-dev
+
+      - run: npm clean-install --build-from-source
+        shell: alpine.sh {0}
+
+      - name: npm run bundle
+        run: |
+          npm run bundle
+          ls -lah dist/
+          ls -lah dist/libs
+        shell: alpine.sh {0}
+
+      - name: guacamole-dotool --help
+        run: |
+          rm -rf node_modules package.json
+          ./dist/guacamole-dotool.mjs --help
+        shell: alpine.sh {0}
+
+  bundle-ubuntu:
+    name: Build bundle on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies for building canvas
+        run: sudo apt-get install libcairo2-dev libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev
+
+      - run: npm clean-install --build-from-source
+
+      - name: npm run bundle
+        run: |
+          npm run bundle
+          ls -lah dist/
+          ls -lah dist/libs
+
+      - name: guacamole-dotool --help
+        run: |
+          rm -rf node_modules package.json
+          ./dist/guacamole-dotool.mjs --help
 
   publish:
     name: Publish on npmjs
