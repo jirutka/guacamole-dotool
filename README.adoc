@@ -14,6 +14,11 @@ It’s exactly like https://github.com/sibson/vncdotool[vncdotool] or https://gi
 
 == Installation
 
+=== On Alpine Linux
+
+The https://pkgs.alpinelinux.org/packages?name={proj-name}[{proj-name}] package is currently available in the testing repository or in my https://github.com/jirutka/user-aports/[backports] for v3.18.
+
+
 === Using npm
 
 [source, subs="+attributes"]
