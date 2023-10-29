@@ -6,6 +6,19 @@ A command-line https://guacamole.apache.org/[Guacamole] client and TypeScript/Ja
 It’s exactly like https://github.com/sibson/vncdotool[vncdotool] or https://github.com/jordansissel/xdotool[xdotool], but over the Guacamole protocol.
 
 
+== Installation
+
+=== Using npm
+
+[source, subs="+attributes"]
+npm install --global {proj-name}
+
+*Warning:* The https://github.com/Automattic/node-canvas[canvas] package downloads pre-built native libraries (cairo, pango, libjpeg…) from npmjs.com by default.
+If you want to build it from source instead (highly recommended), use option `--build-from-source`.
+See https://github.com/Automattic/node-canvas#installation[node-canvas installation] for details.
+
+
+
 == Usage
 
 === Command line
