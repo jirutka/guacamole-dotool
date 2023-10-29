@@ -26,7 +26,8 @@
     "build": "tsc",
     "bundle": "rollup -c",
     "format": "prettier src/**/*.ts --write",
-    "lint": "tsc --noEmit && prettier src/**/*.ts --check"
+    "lint": "tsc --noEmit && prettier src/**/*.ts --check",
+    "prepublishOnly": "asciidoctor -b docbook -a npm-readme -o - README.adoc | pandoc -f docbook -t gfm --shift-heading-level-by 1 --wrap preserve -o README.md"
   },
   "engines": {
     "node": ">= 18.0.0"
