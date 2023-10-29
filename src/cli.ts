@@ -18,7 +18,7 @@ import { Keymap, Keymaps } from './keymaps.js'
 import { camelToKebab, Entries, omitUndefined, wrapText } from './utils.js'
 
 const ProgName = 'guacamole-dotool'
-const Version = '0.1.0'
+const Version = '0.1.1'
 
 const Help = `\
 Usage:
