@@ -1,0 +1,51 @@
+= Guacamole dotool
+:proj-name: guacamole-dotool
+:gh-name: jirutka/{proj-name}
+
+A command-line https://guacamole.apache.org/[Guacamole] client and TypeScript/JavaScript library for headless scripting.
+It’s exactly like https://github.com/sibson/vncdotool[vncdotool] or https://github.com/jordansissel/xdotool[xdotool], but over the Guacamole protocol.
+
+
+== Usage
+
+=== Command line
+
+[source, sh]
+----
+guacamole-dotool --url wss://example.org/guacamole -- \
+  key Cmd+t pause 2 type 'echo "Hello, world!"' key Enter pause 0.5 capture screenshot.png
+----
+
+Run `guacamole-dotool --help` to learn more.
+
+
+=== TypeScript / JavaScript
+
+[source, ts, subs="+attributes"]
+----
+import { Client, setDomGlobals } from '{proj-name}'
+
+// Set canvas, jsdom and ws to the global context.
+setDomGlobals()
+
+// Connect to Guacamole via WebSocket.
+const c = await Client.connect('wss://example.org/guacamole')
+
+// Run commands...
+await c.keysPress('Cmd', 't')
+await c.pause(2)
+await c.type('echo "Hello, world!"')
+await c.keysPress('Enter')
+await c.pause(0.5)
+await c.captureScreenToFile('screenshot.png')
+
+c.disconnect()
+----
+
+See link:src/client.ts[] to learn more.
+
+
+== License
+
+This project is licensed under http://opensource.org/licenses/MIT/[MIT License].
+For the full text of the license, see the link:LICENSE[LICENSE] file.

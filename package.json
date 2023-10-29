@@ -1,0 +1,49 @@
+{
+  "name": "guacamole-dotool",
+  "version": "0.0.0",
+  "description": "Guacamole CLI client and JS library for headless scripting (just like vncdotool, but over Guacamole)",
+  "author": {
+    "name": "Jakub Jirutka",
+    "email": "jakub@jirutka.cz"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/jirutka/guacamole-dotool",
+  "keywords": [
+    "automation",
+    "cli",
+    "dotool",
+    "guacamole",
+    "headless",
+    "vnc"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "bin": "lib/cli.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier src/**/*.ts --write",
+    "lint": "tsc --noEmit && prettier src/**/*.ts --check"
+  },
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "guacamole-common-js": "^1.5.0",
+    "jsdom": "^22.1.0",
+    "type-flag": "^3.0.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/debug": "~4.1.10",
+    "@types/guacamole-common-js": "~1.3.4",
+    "@types/jsdom": "~21.1.4",
+    "@types/node": "~18.11.9",
+    "@types/ws": "~8.5.8",
+    "prettier": "~3.0.3",
+    "typescript": "~5.2.2"
+  }
+}
