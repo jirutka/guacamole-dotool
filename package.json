@@ -1,6 +1,6 @@
 {
   "name": "guacamole-dotool",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Guacamole CLI client and JS library for headless scripting (just like vncdotool, but over Guacamole)",
   "author": {
     "name": "Jakub Jirutka",
