@@ -1,6 +1,12 @@
 = Guacamole dotool
 :proj-name: guacamole-dotool
+:npm-name: {proj-name}
 :gh-name: jirutka/{proj-name}
+
+ifdef::env-github[]
+image:https://github.com/{gh-name}/workflows/CI/badge.svg[CI Workflow, link=https://github.com/{gh-name}/actions?query=workflow%3A%22CI%22]
+image:https://img.shields.io/npm/v/{npm-name}.svg[npm Version, link="https://www.npmjs.org/package/{npm-name}"]
+endif::env-github[]
 
 A command-line https://guacamole.apache.org/[Guacamole] client and TypeScript/JavaScript library for headless scripting.
 It’s exactly like https://github.com/sibson/vncdotool[vncdotool] or https://github.com/jordansissel/xdotool[xdotool], but over the Guacamole protocol.
@@ -11,7 +17,7 @@ It’s exactly like https://github.com/sibson/vncdotool[vncdotool] or https://gi
 === Using npm
 
 [source, subs="+attributes"]
-npm install --global {proj-name}
+npm install --global {npm-name}
 
 *Warning:* The https://github.com/Automattic/node-canvas[canvas] package downloads pre-built native libraries (cairo, pango, libjpeg…) from npmjs.com by default.
 If you want to build it from source instead (highly recommended), use option `--build-from-source`.
@@ -36,7 +42,7 @@ Run `guacamole-dotool --help` to learn more.
 
 [source, ts, subs="+attributes"]
 ----
-import { Client, setDomGlobals } from '{proj-name}'
+import { Client, setDomGlobals } from '{npm-name}'
 
 // Set canvas, jsdom and ws to the global context.
 setDomGlobals()
