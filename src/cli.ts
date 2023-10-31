@@ -1,5 +1,5 @@
 import * as FS from 'node:fs/promises'
-import { exit } from 'node:process'
+import { exit, stdin } from 'node:process'
 
 import { Flags, typeFlag } from 'type-flag'
 
@@ -15,6 +15,7 @@ import {
 import { GuacamoleError } from './errors.js'
 import { setDomGlobals } from './global.js'
 import { Keymap, Keymaps } from './keymaps.js'
+import { startRepl } from './repl.js'
 import { camelToKebab, Entries, omitUndefined, wrapText } from './utils.js'
 
 const ProgName = 'guacamole-dotool'
@@ -22,9 +23,14 @@ const Version = '0.1.1'
 
 const Help = `\
 Usage:
-  ${ProgName} [options] -- (<cmd> [<cmd-args>])...
+  ${ProgName} [options] [--] [<cmd> [<cmd-args>]]...
   ${ProgName} [options] --from-file <file>
   ${ProgName} (--version | --help)
+
+Connect to a remote host via Guacamole over WebSocket and send commands.
+
+If no commands are provided as arguments, it reads from stdin. If stdin is a
+terminal, REPL is started.
 
 Commands:
 ${formatCommandsForHelp(Commands, 80)}
@@ -91,19 +97,24 @@ async function main() {
   if (opts.fromFile) {
     const script = await FS.readFile(opts.fromFile, 'utf-8')
     commands = parseScript(script)
+
+    if (commands.length === 0) {
+      console.error(`${ProgName}: No commands read from ${opts.fromFile}`)
+      exit(1)
+    }
   } else {
     commands = parseCommands(args)
   }
 
-  if (commands.length === 0) {
-    console.error(`${ProgName}: No commands given`)
-    exit(1)
-  }
-
   setDomGlobals(global)
+
   const client = await Client.connect(opts.url!, keymap, opts)
 
-  await interpretCommands(client, commands)
+  if (commands.length > 0) {
+    await interpretCommands(client, commands)
+  } else {
+    await startRepl(client, isInteractive())
+  }
 
   client.disconnect()
 }
@@ -190,6 +201,10 @@ function formatCommandsForHelp(commands: Record<string, CommandInfo>, maxWidth =
       return lines
     }, [])
     .join('\n')
+}
+
+function isInteractive(): boolean {
+  return stdin.isTTY && process.env.TERM !== 'dumb'
 }
 
 //////////////////////////////  M a i n  //////////////////////////////
