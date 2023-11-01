@@ -81,36 +81,6 @@ export const Commands = {
 } satisfies Record<string, CommandInfo>
 
 /**
- * Parses the given list of `tokens` (white-space separated or double-quoted)
- * into commands that can be interpreted by {@link interpretCommands}.
- *
- * @throws {@link GuacamoleCommandError} on unknown command and invalid arguments.
- */
-export function parseCommands(tokens: string[]): Command[] {
-  tokens = [...tokens]
-  const cmds = []
-
-  while (tokens.length > 0) {
-    const cmd = tokens.shift()!
-    if (!Object.hasOwn(Commands, cmd)) {
-      throw new GuacamoleCommandError('UNKNOWN', cmd, 'is not a valid command')
-    }
-    const info = Commands[cmd as CommandName]
-
-    if (tokens.length < info.params.length) {
-      throw new GuacamoleCommandError(
-        'INVALID_ARGUMENT',
-        cmd,
-        `expects ${info.params.length} arguments, but got only ${tokens.length}`,
-      )
-    }
-    const params = info.params.map(parse => parse(tokens.shift()!, cmd))
-    cmds.push([info.method, ...params])
-  }
-  return cmds as Command[]
-}
-
-/**
  * Parses the given script into commands that can be interpreted by
  * {@link interpretCommands}.
  *
@@ -128,6 +98,66 @@ export function parseCommands(tokens: string[]): Command[] {
  */
 export function parseScript(content: string): Command[] {
   return parseCommands(parseScriptToWords(content))
+}
+
+/**
+ * Splits the `input` text to “words” by a (ASCII) whitespace.
+ * See {@link parseScript} for a detailed description.
+ */
+function parseScriptToWords(input: string): string[] {
+  const words = ['']
+
+  const regex = /^#[^\n]*\n|[^\\"\s]+|\s+(?:#[^\n]*)?|"|\\./gs
+  let quoted: 0 | 1 = 0
+  let match: string | undefined
+
+  while ((match = regex.exec(input)?.[0]) != null) {
+    if (match[0] === '\\') {
+      words[words.length - 1] += match[1] // strip \
+    } else if (match === '"') {
+      quoted ^= 1
+    } else if (quoted) {
+      words[words.length - 1] += match
+    } else {
+      match = match.trimStart()
+      if (match === '') {
+        words.push('') // start a new word
+      } else if (match[0] !== '#') {
+        words[words.length - 1] += match
+      }
+    }
+  }
+  return words
+}
+
+/**
+ * Parses the given list of `words` into commands that can be interpreted by
+ * {@link interpretCommands}.
+ *
+ * @throws {@link GuacamoleCommandError} on unknown command and invalid arguments.
+ */
+export function parseCommands(words: string[]): Command[] {
+  words = [...words]
+  const cmds = []
+
+  while (words.length > 0) {
+    const cmd = words.shift()!
+    if (!Object.hasOwn(Commands, cmd)) {
+      throw new GuacamoleCommandError('UNKNOWN', cmd, 'is not a valid command')
+    }
+    const info = Commands[cmd as CommandName]
+
+    if (words.length < info.params.length) {
+      throw new GuacamoleCommandError(
+        'INVALID_ARGUMENT',
+        cmd,
+        `expects ${info.params.length} arguments, but got only ${words.length}`,
+      )
+    }
+    const params = info.params.map(parse => parse(words.shift()!, cmd))
+    cmds.push([info.method, ...params])
+  }
+  return cmds as Command[]
 }
 
 /**
@@ -197,34 +227,4 @@ function ValidNumber(value: string, command: string): number {
     )
   }
   return num
-}
-
-/**
- * Splits the `input` text to “words” by a (ASCII) whitespace.
- * See {@link parseScript} for a detailed description.
- */
-function parseScriptToWords(input: string): string[] {
-  const words = ['']
-
-  const regex = /^#[^\n]*\n|[^\\"\s]+|\s+(?:#[^\n]*)?|"|\\./gs
-  let quoted: 0 | 1 = 0
-  let match: string | undefined
-
-  while ((match = regex.exec(input)?.[0]) != null) {
-    if (match[0] === '\\') {
-      words[words.length - 1] += match[1] // strip \
-    } else if (match === '"') {
-      quoted ^= 1
-    } else if (quoted) {
-      words[words.length - 1] += match
-    } else {
-      match = match.trimStart()
-      if (match === '') {
-        words.push('') // start a new word
-      } else if (match[0] !== '#') {
-        words[words.length - 1] += match
-      }
-    }
-  }
-  return words
 }
