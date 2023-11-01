@@ -1,7 +1,7 @@
 import { stdin, stdout } from 'node:process'
 import { createInterface as createReadLine } from 'node:readline'
 
-import { interpretCommands, parseScript } from './commands.js'
+import { interpretCommands, parseCommands, parseScriptToWords } from './commands.js'
 import { Client } from './client.js'
 
 export async function startRepl(client: Client, interactive: boolean) {
@@ -16,9 +16,20 @@ export async function startRepl(client: Client, interactive: boolean) {
   }
 
   readline.prompt()
+
+  let prev = ''
   for await (const line of readline) {
     try {
-      await interpretCommands(client, parseScript(line))
+      const { words, unclosed } = parseScriptToWords(prev + line)
+
+      if (unclosed) {
+        prev += line + '\n'
+        interactive && readline.setPrompt('... ')
+      } else {
+        prev = ''
+        interactive && readline.setPrompt('> ')
+        await interpretCommands(client, parseCommands(words))
+      }
     } catch (err: any) {
       if (interactive) {
         console.error(`ERROR: ${err.message}`)

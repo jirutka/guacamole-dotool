@@ -97,14 +97,14 @@ export const Commands = {
  * @throws {@link GuacamoleCommandError} on unknown command and invalid arguments.
  */
 export function parseScript(content: string): Command[] {
-  return parseCommands(parseScriptToWords(content))
+  return parseCommands(parseScriptToWords(content).words)
 }
 
 /**
- * Splits the `input` text to “words” by a (ASCII) whitespace.
+ * @internal Splits the `input` text to “words” by a (ASCII) whitespace.
  * See {@link parseScript} for a detailed description.
  */
-function parseScriptToWords(input: string): string[] {
+export function parseScriptToWords(input: string): { words: string[]; unclosed: boolean } {
   const words = ['']
 
   const regex = /^#[^\n]*\n|[^\\"\s]+|\s+(?:#[^\n]*)?|"|\\./gs
@@ -127,7 +127,7 @@ function parseScriptToWords(input: string): string[] {
       }
     }
   }
-  return words
+  return { words, unclosed: !!quoted }
 }
 
 /**
