@@ -114,14 +114,20 @@ export function parseCommands(tokens: string[]): Command[] {
  * Parses the given script into commands that can be interpreted by
  * {@link interpretCommands}.
  *
+ * Parsing follows very similar rules to _shell words_:
+ *
+ * - Each double-quoted substring is interpreted as a single argument.
+ * - Backslash (`\`) is interpreted as an escape character. It can be used to
+ *   escape double quotes (`"`) and whitespaces. It's always stripped, so
+ *   to use a literal backslash, it must be doubled (`\\`).
+ * - Everything after `#` to the end of the line is interpreted as a comment and
+ *   stripped iif it's not inside a double-quoted substring and it's at the
+ *   start of a line or comes after one or more whitespaces.
+ *
  * @throws {@link GuacamoleCommandError} on unknown command and invalid arguments.
  */
 export function parseScript(content: string): Command[] {
-  const words = splitTextWithQuotes(content)
-    .filter(words => words.length > 0 && !words[0].startsWith('#'))
-    .flat()
-
-  return parseCommands(words)
+  return parseCommands(parseScriptToWords(content))
 }
 
 /**
@@ -194,28 +200,31 @@ function ValidNumber(value: string, command: string): number {
 }
 
 /**
- * Splits text to words and double-quoted parts. Returns two-dimensional array
- * where the first dimension are lines, the second are words on the line.
- * Newlines in double-quoted parts are preserved, i.e. it's treat as a single
- * word.
+ * Splits the `input` text to “words” by a (ASCII) whitespace.
+ * See {@link parseScript} for a detailed description.
  */
-function splitTextWithQuotes(input: string): string[][] {
-  const regex = /"([^"\\]*(\\.[^"\\]*)*)"|(\S+)|(\n)/g
-  const lines: string[][] = []
+function parseScriptToWords(input: string): string[] {
+  const words = ['']
 
-  let words: string[] = []
-  let match
-  while ((match = regex.exec(input)) !== null) {
-    if (match[4]) {
-      lines.push(words)
-      words = []
-    } else if (match[1]) {
-      words.push(match[1].replace(/\\"/g, '"'))
+  const regex = /^#[^\n]*\n|[^\\"\s]+|\s+(?:#[^\n]*)?|"|\\./gs
+  let quoted: 0 | 1 = 0
+  let match: string | undefined
+
+  while ((match = regex.exec(input)?.[0]) != null) {
+    if (match[0] === '\\') {
+      words[words.length - 1] += match[1] // strip \
+    } else if (match === '"') {
+      quoted ^= 1
+    } else if (quoted) {
+      words[words.length - 1] += match
     } else {
-      words.push(match[3])
+      match = match.trimStart()
+      if (match === '') {
+        words.push('') // start a new word
+      } else if (match[0] !== '#') {
+        words[words.length - 1] += match
+      }
     }
   }
-  lines.push(words)
-
-  return lines
+  return words
 }
