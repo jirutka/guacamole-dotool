@@ -19,7 +19,7 @@ import { startRepl } from './repl.js'
 import { camelToKebab, Entries, omitUndefined, wrapText } from './utils.js'
 
 const ProgName = 'guacamole-dotool'
-const Version = '0.1.1'
+const Version = '0.2.0'
 
 const Help = `\
 Usage:
