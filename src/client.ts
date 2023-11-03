@@ -76,7 +76,7 @@ export interface Client<TKeymap extends Keymap = DefaultKeymap> {
   mouseMove(x: number, y: number): Promise<void>
 
   /** Takes a screenshot of the current screen and returns PNG data. */
-  captureScreen(config?: PngConfig): Buffer
+  captureScreen(config?: PngConfig): Promise<Buffer>
 
   /** Takes a screenshot and saves PNG to the `filename`. */
   captureScreenToFile(filename: string, config?: PngConfig): Promise<void>
@@ -226,17 +226,29 @@ export const createClient = <TKeymap extends Keymap>(
     },
 
     captureScreen(config) {
-      const canvasElement = client.getDisplay().flatten()
-      const canvas = canvasFromElement(canvasElement)
+      const display = client.getDisplay()
 
-      if (canvas.width === 0 || canvas.height === 0) {
-        throw new GuacamoleClientError('CANVAS_NOT_INITIALIZED', 'Canvas is not yet initialized')
-      }
-      return canvas.toBuffer('image/png', config)
+      return new Promise((resolve, reject) =>
+        display.flush(() => {
+          try {
+            const canvas = canvasFromElement(display.flatten())
+
+            if (canvas.width === 0 || canvas.height === 0) {
+              throw new GuacamoleClientError(
+                'CANVAS_NOT_INITIALIZED',
+                'Canvas is not yet initialized',
+              )
+            }
+            resolve(canvas.toBuffer('image/png', config))
+          } catch (err) {
+            reject(err)
+          }
+        }),
+      )
     },
 
     async captureScreenToFile(filename, config) {
-      const image = self.captureScreen(config)
+      const image = await self.captureScreen(config)
       await FS.writeFile(filename, image)
     },
 
