@@ -1,7 +1,10 @@
 name: CI
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+  schedule:
+    # Run every week on Saturday midnight.
+    - cron: 0 0 * * 6
 
 jobs:
   test:
