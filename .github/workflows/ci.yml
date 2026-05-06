@@ -16,10 +16,10 @@ jobs:
           - latest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -34,7 +34,7 @@ jobs:
     name: Build bundle on Alpine
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup latest Alpine Linux
         uses: jirutka/setup-alpine@v1
@@ -67,7 +67,7 @@ jobs:
     name: Build bundle on Ubuntu
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install system dependencies for building canvas
         run: sudo apt-get install libcairo2-dev libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev
@@ -93,14 +93,14 @@ jobs:
     steps:
       - run: sudo apt-get install asciidoctor pandoc
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - run: npm clean-install
 
       - run: npm run build
 
       - name: Set up .npmrc file
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
