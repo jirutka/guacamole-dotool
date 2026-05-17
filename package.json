@@ -22,7 +22,9 @@
   ],
   "type": "module",
   "main": "lib/index.js",
-  "bin": "lib/cli.js",
+  "bin": {
+    "guacamole-dotool": "lib/cli.js"
+  },
   "files": [
     "lib"
   ],
