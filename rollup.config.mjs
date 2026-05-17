@@ -78,6 +78,13 @@ const config = {
       extensions: ['.js', '.ts'],
       // The default option (false) breaks `canvas.node`.
       requireReturnsDefault: 'auto',
+      // rrweb-cssom (jsdom dep) uses `global` for circular deps; rollup's
+      // rewrite to `commonjsGlobal` breaks initialization order.
+      ignoreGlobal: true,
+      // Some jsdom dependencies contain both `require` and `export` syntax.
+      // Without this, rollup skips them as "already ESM", breaking circular
+      // dependency resolution (e.g. rrweb-cssom -> CSSKeyframesRule).
+      transformMixedEsModules: true,
     }),
     // Extract native modules (*.node files).
     // @ts-ignore
