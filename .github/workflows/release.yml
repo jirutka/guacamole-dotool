@@ -1,0 +1,27 @@
+name: Release
+on:
+  release:
+    types: [published]
+
+jobs:
+  npmjs:
+    name: Publish on npmjs
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install asciidoctor pandoc
+
+      - uses: actions/checkout@v6
+
+      - run: npm clean-install
+
+      - run: npm run build
+
+      - name: Set up .npmrc file
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
