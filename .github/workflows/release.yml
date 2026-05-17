@@ -25,4 +25,10 @@ jobs:
 
       - run: npm run build
 
-      - run: npm publish --provenance --access public
+      - name: Publish to npm
+        run: |
+          case "$(node -p "require('./package.json').version")" in
+            *-*) dist_tag=next ;;
+            *) dist_tag=latest ;;
+          esac
+          npm publish --provenance --access public --tag "$dist_tag"
