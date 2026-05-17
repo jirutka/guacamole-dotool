@@ -5,7 +5,8 @@ import { WebSocket } from 'ws'
 /**
  * Sets `canvas`, `jsdom`, and `ws` to the `global` context - `window`,
  * `document`, `Image` and `WebSocket`. These are required by the
- * `guacamole-common-js` library.
+ * `guacamole-common-js` library. Also add `Node` which seems to be required by
+ * `canvas`.
  */
 export function setDomGlobals(aGlobal: typeof globalThis = global) {
   const { window } = new JSDOM('<!doctype html><html><body></body></html>', {
@@ -14,5 +15,6 @@ export function setDomGlobals(aGlobal: typeof globalThis = global) {
   aGlobal.window = window as any
   aGlobal.document = window.document
   aGlobal.Image = Image as any
+  aGlobal.Node = window.Node as any
   aGlobal.WebSocket = WebSocket as any
 }

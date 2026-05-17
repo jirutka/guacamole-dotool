@@ -30,10 +30,10 @@
     "prepublishOnly": "asciidoctor -b docbook -a npm-readme -o - README.adoc | pandoc -f docbook -t gfm --shift-heading-level-by 1 --wrap preserve -o README.md"
   },
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 18.12.0"
   },
   "dependencies": {
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.3",
     "guacamole-common-js": "^1.5.0",
     "jsdom": "^22.1.0",
     "type-flag": "^3.0.0",
@@ -58,5 +58,11 @@
     "rollup-plugin-natives": "^0.7.8",
     "tslib": "^2.6.2",
     "typescript": "~5.2.2"
+  },
+  "//": "jsdom@22 declares peerOptional canvas@^2.5.0, but we use canvas@3 to make it work with the latest NodeJS. jsdom@24 and newer are even more bloated and rollup fails to bundle it.",
+  "overrides": {
+    "jsdom": {
+      "canvas": "$canvas"
+    }
   }
 }
