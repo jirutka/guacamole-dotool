@@ -47,7 +47,11 @@ jobs:
             pango-dev
             pixman-dev
 
-      - run: npm clean-install --build-from-source
+      - run: npm clean-install
+        env:
+          # Force prebuild-install (used by canvas) to compile from source
+          # instead of downloading prebuilt binaries.
+          npm_config_build_from_source: true
         shell: alpine.sh {0}
 
       - name: npm run bundle
@@ -72,7 +76,11 @@ jobs:
       - name: Install system dependencies for building canvas
         run: sudo apt-get install libcairo2-dev libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev
 
-      - run: npm clean-install --build-from-source
+      - run: npm clean-install
+        env:
+          # Force prebuild-install (used by canvas) to compile from source
+          # instead of downloading prebuilt binaries.
+          npm_config_build_from_source: true
 
       - name: npm run bundle
         run: |
