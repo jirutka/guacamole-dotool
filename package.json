@@ -8,6 +8,10 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/jirutka/guacamole-dotool",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jirutka/guacamole-dotool.git"
+  },
   "keywords": [
     "automation",
     "cli",

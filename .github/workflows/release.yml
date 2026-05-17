@@ -7,21 +7,22 @@ jobs:
   npmjs:
     name: Publish on npmjs
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
-      - run: sudo apt-get install asciidoctor pandoc
+      - run: sudo apt-get install -y asciidoctor pandoc
 
       - uses: actions/checkout@v6
 
-      - run: npm clean-install
-
-      - run: npm run build
-
-      - name: Set up .npmrc file
+      - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm clean-install
+
+      - run: npm run build
+
+      - run: npm publish --provenance --access public
